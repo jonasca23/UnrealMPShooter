@@ -9,15 +9,16 @@
 class AWeapon;
 class ABlasterCharacter;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UNREALMPSHOOTER_API UCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UCombatComponent();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	friend class ABlasterCharacter;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void EquipWeapon(AWeapon* WeaponToEquip);
 
@@ -26,8 +27,10 @@ protected:
 
 private:
 	ABlasterCharacter* Character;
-	AWeapon* EquippedWeapon;
 
-public:	
-			
+	UPROPERTY(Replicated)
+		AWeapon* EquippedWeapon;
+
+public:
+
 };
