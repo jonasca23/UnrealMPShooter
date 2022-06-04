@@ -10,6 +10,7 @@
 #include "UnrealMPShooter/Weapon/Weapon.h"
 #include "UnrealMPShooter/BlasterComponents/CombatComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -56,6 +57,8 @@ void ABlasterCharacter::BeginPlay()
 void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	AimOffset(DeltaTime);
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -208,4 +211,43 @@ bool ABlasterCharacter::IsWeaponEquipped()
 bool ABlasterCharacter::IsAiming()
 {
 	return (Combat && Combat->bAiming);
+}
+
+void ABlasterCharacter::AimOffset(float DeltaTime)
+{
+	if (Combat && Combat->EquippedWeapon == nullptr) return;
+
+	FVector Velocity = GetVelocity();
+	Velocity.Z = 0;
+	float Speed = Velocity.Size();
+
+	bool bIsInAir = GetCharacterMovement()->IsFalling();
+
+	if (Speed == 0.f && !bIsInAir) // Character is stopped, so we use StartingAimRotation
+	{
+		FRotator CurrentAimRotation = GetBaseAimRotation();
+		FRotator DeltaAimRotation = UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation);
+		AO_Yaw = DeltaAimRotation.Yaw;
+		bUseControllerRotationYaw = false;
+	}
+
+	if (Speed > 0.f || bIsInAir) // Character is running or jumping, so we update StartingAimRotation
+	{
+		StartingAimRotation = GetBaseAimRotation();
+		AO_Yaw = 0.f;
+		bUseControllerRotationYaw = true;
+	}
+
+	// since we want to change pitch whatever we are moving or not, we can set pitch here
+	AO_Pitch = GetBaseAimRotation().Pitch;
+
+	// We need to remap AO_Pitch value to show the AimOffset output correclty to other clients and the server
+	// since Unreal, under the hood, make this to pitch value into a unsigned form using [0, 360) values.
+	if (AO_Pitch > 90.f && !IsLocallyControlled())
+	{
+		// map pitch from [270, 360) to [-90, 0)
+		FVector2D InRange(270.f, 360.f);
+		FVector2D OutRange(-90.f, 0.f);
+		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
+	}
 }
