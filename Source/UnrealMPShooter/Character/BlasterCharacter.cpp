@@ -9,6 +9,7 @@
 #include "Net/UnrealNetwork.h"
 #include "UnrealMPShooter/Weapon/Weapon.h"
 #include "UnrealMPShooter/BlasterComponents/CombatComponent.h"
+#include "Components/CapsuleComponent.h"
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -33,6 +34,8 @@ ABlasterCharacter::ABlasterCharacter()
 	Combat->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
 void ABlasterCharacter::PostInitializeComponents()
