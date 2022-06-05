@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "UnrealMPShooter/BlasterTypes/TurningInPlace.h"
 #include "BlasterAnimInstance.generated.h"
 
 class AWeapon;
@@ -11,6 +12,7 @@ class AWeapon;
 /**
  *
  */
+
 UCLASS()
 class UNREALMPSHOOTER_API UBlasterAnimInstance : public UAnimInstance
 {
@@ -62,4 +64,7 @@ private:
 		FTransform LeftHandTransform;
 
 	AWeapon* EquippedWeapon;
+
+	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+		ETurningInPlace TurningInPlace;
 };
