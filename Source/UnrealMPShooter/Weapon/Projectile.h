@@ -7,6 +7,9 @@
 #include "Projectile.generated.h"
 
 class UBoxComponent;
+class UProjectileMovementComponent;
+class UParticleSystem;
+class UParticleSystemComponent;
 
 UCLASS()
 class UNREALMPSHOOTER_API AProjectile : public AActor
@@ -23,6 +26,14 @@ protected:
 private:
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* CollisionBox;
+
+	UPROPERTY(VisibleAnywhere)
+		UProjectileMovementComponent* ProjectileMovementComponent;
+
+	UPROPERTY(EditAnywhere)
+		UParticleSystem* Tracer;
+
+	UParticleSystemComponent* TracerComponent;
 
 public:
 
