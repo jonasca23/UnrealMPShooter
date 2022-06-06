@@ -18,6 +18,7 @@ enum class EWeaponState : uint8
 
 class USphereComponent;
 class UWidgetComponent;
+class UAnimationAsset;
 
 UCLASS()
 class UNREALMPSHOOTER_API AWeapon : public AActor
@@ -27,8 +28,9 @@ class UNREALMPSHOOTER_API AWeapon : public AActor
 public:
 	AWeapon();
 	virtual void Tick(float DeltaTime) override;
-	void ShowPickupWidget(bool bShowWidget);
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void ShowPickupWidget(bool bShowWidget);
+	void Fire();
 
 protected:
 	virtual void BeginPlay() override;
@@ -66,6 +68,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 		UWidgetComponent* PickupWidget;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	UAnimationAsset* FireAnimation;
+
 public:
 	void SetWeaponState(EWeaponState State);
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
