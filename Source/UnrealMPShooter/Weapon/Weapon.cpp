@@ -8,6 +8,8 @@
 #include "Net/UnrealNetwork.h"
 #include "Animation/AnimationAsset.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Casing.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 AWeapon::AWeapon()
 {
@@ -115,5 +117,17 @@ void AWeapon::Fire(const FVector& HitTarget)
 	if (FireAnimation)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
+		if (CasingClass)
+		{
+			const USkeletalMeshSocket* AmmoEjectSocket = WeaponMesh->GetSocketByName(FName("AmmoEject"));
+			UWorld* World = GetWorld();
+			if (World && AmmoEjectSocket)
+			{
+				FTransform SocketTransform = AmmoEjectSocket->GetSocketTransform(WeaponMesh);
+
+				World->SpawnActor<ACasing>(CasingClass,
+					SocketTransform);
+			}
+		}
 	}
 }
