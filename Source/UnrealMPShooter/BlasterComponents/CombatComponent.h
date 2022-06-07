@@ -10,6 +10,8 @@
 
 class AWeapon;
 class ABlasterCharacter;
+class ABlasterPlayerController;
+class ABlasterHUD;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UNREALMPSHOOTER_API UCombatComponent : public UActorComponent
@@ -43,9 +45,12 @@ protected:
 		void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+	void SetHUDCrosshairs(float DeltaTime);
 
 private:
 	ABlasterCharacter* Character;
+	ABlasterPlayerController* Controller;
+	ABlasterHUD* HUD;
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 		AWeapon* EquippedWeapon;
@@ -59,7 +64,7 @@ private:
 	UPROPERTY(EditAnywhere)
 		float AimWalkSpeed;
 
-	bool bFireButtonPressed;
+	bool bFireButtonPressed;	
 
 public:
 
